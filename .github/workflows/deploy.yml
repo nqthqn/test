@@ -1,0 +1,27 @@
+name: Push images from forks
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  echo_dockerfile_from_fork:
+    name: Echo Dockerfile from fork
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    steps:
+      - name: Check out the triggering repository
+        uses: actions/checkout@v4
+
+      - name: Clone the forked repository with Dockerfile
+        run: |
+          git clone https://github.com/nqthqn/dcc-admin-dashboard.git dcc-admin-dashboard
+
+      - name: Echo Dockerfile
+        run: |
+          head dcc-admin-dashboard/Dockerfile
+      
