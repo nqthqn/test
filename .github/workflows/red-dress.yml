@@ -1,0 +1,12 @@
+name: Testing matrix
+on: push
+run-name: For fun
+
+jobs:
+  haha:
+    strategy:
+      matrix:
+        stuff: ["test", "this"]
+  steps:
+    - name: See her?
+      run: echo '${{ matrix.stuff }}'
