@@ -1,5 +1,5 @@
 name: Push images from forks
-run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+run-name: Context Baby!
 
 on: push
 env:
@@ -34,26 +34,6 @@ jobs:
         env:
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo "$MATRIX_CONTEXT"
-  echo_dockerfile_from_fork:
-    name: Echo Dockerfile from fork
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-      attestations: write
-      id-token: write
-    steps:
-      - name: Check out this repo
-        uses: actions/checkout@v4
-
-      - name: Clone the forked repositories
-        run: |
-          git clone https://github.com/nqthqn/dcc-admin-dashboard.git dcc-admin-dashboard
-
-      - name: Echo Dockerfile
-        run: |
-          head dcc-admin-dashboard/Dockerfile
-
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
