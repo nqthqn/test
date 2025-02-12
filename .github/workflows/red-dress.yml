@@ -1,9 +1,10 @@
 name: Clone forks and cat Dockerfiles
+run-name: Check, build, push
 on: push
 env:
   base: https://github.com/${{github.repository_owner}}
 jobs:
-  haha:
+  clone:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
