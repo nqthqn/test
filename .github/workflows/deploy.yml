@@ -13,28 +13,31 @@ jobs:
           - "for-test"
     steps:
       - name: get fork
+        id: forky
         uses: actions/checkout@v4
         with:
           repository: "${{ env.ghuser }}/${{ matrix.fork }}"
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+          fetch-tags: true
 
-      - name: dockerhub login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: debug
+        run: ${{ toJson(steps.forky.outputs) }} # TODO: get all the tags
 
-      - name: dockhub tags
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.dhuser }}/${{ matrix.fork }}
-          tags: |
-            type=semver,pattern={{version}}
 
-      # - name: debug
-      #   run: ${{ toJson(steps.meta.outputs) }} # TODO: get all the tags
+      # - name: dockerhub login
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # - name: dockhub tags
+      #   id: meta
+      #   uses: docker/metadata-action@v5
+      #   with:
+      #     images: ${{ env.dhuser }}/${{ matrix.fork }}
+      #     tags: |
+      #       type=semver,pattern={{version}}
 
       # - name: docker build & push
       #   uses: docker/build-push-action@v6
