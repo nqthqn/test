@@ -29,7 +29,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.dhuser }}/${{ matrix.fork }}
-          tags: type=ref,event=branch
+          tags: |
+            type=semver,pattern={{version}}
 
       - name: debug
         run: ${{ toJson(steps.meta.outputs) }} # TODO: get all the tags
