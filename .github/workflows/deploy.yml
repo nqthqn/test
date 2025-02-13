@@ -25,7 +25,7 @@ jobs:
         with:
           images: nqthqn1/for-test
           tags: |
-            type=semver,pattern={{version}}
+            type=semver,pattern={{v}}
 
       - name: docker build & push
         uses: docker/build-push-action@v6
