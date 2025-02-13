@@ -1,11 +1,10 @@
-name: "goal: clone fork, check tags, deploy if new"
-run-name: YOYOYO ${{ github.sha1 }}
+name: deploy
 on: push
 env:
   ghuser: nqthqn
   dhuser: nqthqn1
 jobs:
-  build_push_forks:
+  deploy:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 10
@@ -13,27 +12,30 @@ jobs:
         fork:
           - "for-test"
     steps:
-      - name: 1 ------- Get the fork
+      - name: get fork
         uses: actions/checkout@v4
         with:
           repository: "${{ env.ghuser }}/${{ matrix.fork }}"
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 2 ------- Log in to Docker Hub
+      - name: dockerhub login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: 3 ------ Get tags from DockerHub
+      - name: dockhub tags
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.dhuser }}/${{ matrix.fork }}
 
-      - name: 4 ------ Build and push
+      - name: debug
+        run: ${{ toJson(steps.meta.outputs) }} # TODO: get all the tags
+
+      - name: docker build & push
         uses: docker/build-push-action@v6
         with:
           context: .
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }} # TODO: find the latest tag, v3
           labels: ${{ steps.meta.outputs.labels }}
