@@ -1,39 +1,14 @@
-name: Push images from forks
-run-name: Context Baby!
-
+name: "goal: clone fork, check tags, deploy if new"
 on: push
-env:
-  ltuae: 42
 jobs:
   dump_contexts_to_log:
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 10
+      matrix:
+        fork:
+          - "dcc-admin-dashboard"
     steps:
-      - name: Remember your towl
-        run: echo 'Number = ${{ env.ltuae }}'
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
-        run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$RUNNER_CONTEXT"
-      - name: Dump strategy context
-        env:
-          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-        run: echo "$STRATEGY_CONTEXT"
-      - name: Dump matrix context
-        env:
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: echo "$MATRIX_CONTEXT"
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
@@ -42,27 +17,18 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@v5
         with:
-          images: nqthqn1/helloworld
+          images: nqthqn1/${{ matrix.fork }}
 
-      - name: Debugging
-        id: debug
-        run: echo "${{ steps.meta.outputs }}"
+      - run: echo "${{ toJson(steps.meta.outputs) }}"
+      - run: echo "${{ toJson(steps.meta) }}"
+      - run: echo "${{ toJson(github) }}"
 
-      - name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-        with:
-          context: ./dcc-admin-dashboard
-          file: ./dcc-admin-dashboard/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
+      # - name: Build and push
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: .
+      #     push: ${{ github.event_name != 'pull_request' }}
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}

@@ -1,5 +1,5 @@
-name: Clone forks and cat Dockerfiles
-run-name: Check, build, push
+name: Push Modified
+run-name: Push Modified
 on: push
 env:
   base: https://github.com/${{github.repository_owner}}
@@ -15,5 +15,5 @@ jobs:
     steps:
       - name: Clone the fork
         run: git clone ${{env.base}}/${{matrix.fork}}.git
-      - name: Prove it
+      - name: Show the Dockerfile
         run: cat ./${{matrix.fork}}/Dockerfile
