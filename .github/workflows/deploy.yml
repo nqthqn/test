@@ -1,34 +1,39 @@
 name: "goal: clone fork, check tags, deploy if new"
+run-name: YOYOYO ${{ github.sha1 }}
 on: push
+env:
+  ghuser: nqthqn
+  dhuser: nqthqn1
 jobs:
-  dump_contexts_to_log:
+  build_push_forks:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 10
       matrix:
         fork:
-          - "dcc-admin-dashboard"
+          - "for-test"
     steps:
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      - name: 1 ------- Get the fork
+        uses: actions/checkout@v4
+        with:
+          repository: "${{ env.ghuser }}/${{ matrix.fork }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 2 ------- Log in to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Extract metadata (tags, labels) for Docker
+      - name: 3 ------ Get tags from DockerHub
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: nqthqn1/${{ matrix.fork }}
+          images: ${{ env.dhuser }}/${{ matrix.fork }}
 
-      - run: echo "${{ toJson(steps.meta.outputs) }}"
-      - run: echo "${{ toJson(steps.meta) }}"
-      - run: echo "${{ toJson(github) }}"
-
-      # - name: Build and push
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: .
-      #     push: ${{ github.event_name != 'pull_request' }}
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
+      - name: 4 ------ Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
