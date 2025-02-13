@@ -1,28 +1,16 @@
 name: deploy
 on: push
-env:
-  ghuser: nqthqn
-  dhuser: nqthqn1
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 10
-      matrix:
-        fork:
-          - "for-test"
     steps:
       - name: get fork
         id: forky
         uses: actions/checkout@v4
         with:
-          repository: "${{ env.ghuser }}/${{ matrix.fork }}"
+          repository: nqthqn/for-test
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
-          fetch-tags: true
-
-      # - name: debug
-      #   run: ${{ toJson(steps.forky.outputs) }} # TODO: get all the tags
+          fetch-tags: true # will this get all the tags?
 
       - name: dockerhub login
         uses: docker/login-action@v3
@@ -34,12 +22,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.dhuser }}/${{ matrix.fork }}
+          images: nqthqn1/for-test
           tags: |
             type=semver,pattern={{version}}
-
-      - name: plz for the love of all things good
-        run: ${{ toJson(steps.meta.outputs) }}
 
       # - name: docker build & push
       #   uses: docker/build-push-action@v6
