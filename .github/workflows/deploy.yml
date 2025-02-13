@@ -10,7 +10,7 @@ jobs:
         with:
           repository: nqthqn/for-test
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0 # get it all!
+          fetch-depth: 0
           fetch-tags: true
 
       - name: dockerhub login
@@ -25,11 +25,11 @@ jobs:
         with:
           images: nqthqn1/for-test
           tags: |
-            type=semver,pattern={{version}},enable=true
+            type=semver,pattern={{version}}
 
-      # - name: docker build & push
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: .
-      #     tags: ${{ steps.meta.outputs.tags }} # TODO: find the latest tag, v3
-      #     labels: ${{ steps.meta.outputs.labels }}
+      - name: docker build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
