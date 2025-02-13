@@ -10,7 +10,8 @@ jobs:
         with:
           repository: nqthqn/for-test
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-tags: true # will this get all the tags?
+          fetch-depth: 0 # get it all!
+          fetch-tags: true
 
       - name: dockerhub login
         uses: docker/login-action@v3
