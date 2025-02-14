@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: nqthqn/${{ matrix.repo }}
-          path: ${{ matrix.fork }}
+          path: ${{ matrix.repo }}
           fetch-depth: 0 # kinda slow
 
       - name: Fetch tags
