@@ -7,12 +7,12 @@ jobs:
       matrix:
         repo:
           - "for-test"
-          - "repos"
     steps:
       - name: get fork
         uses: actions/checkout@v4
         with:
           repository: nqthqn/${{ matrix.repo }}
+          path: ${{ matrix.fork }}
           fetch-depth: 0 # kinda slow
 
       - name: Fetch tags
