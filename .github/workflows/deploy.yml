@@ -17,6 +17,7 @@ jobs:
 
       - name: Fetch tags
         run: |
+          cd ${{ matrix.repo }}
           git fetch --tags
           LATEST_TAG=$(git describe --tags --abbrev=0 || echo "none")
           echo "latest_tag=$LATEST_TAG" >> $GITHUB_ENV
